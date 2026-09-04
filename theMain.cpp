@@ -1,7 +1,7 @@
 #include "DxLib.h"
 #include "globals.h"
 #include "input.h"
-
+#include"Game.h"
 
 namespace
 {
@@ -44,6 +44,8 @@ void MyGame()
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
+	Game game;
+	game.Initialize();
 	DxInit();
 	crrTime = GetNowCount();
 	prevTime = GetNowCount();
@@ -59,8 +61,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		gDeltaTime = deltaTime; // ÉOÉçÅ[ÉoÉãïœêîÇ…ï€ë∂
 
 		//Ç±Ç±Ç…Ç‚ÇËÇΩÇ¢èàóùÇèëÇ≠
-
-
+		game.Update();
+		game.Draw();
 		ScreenFlip();
 		WaitTimer(16);
 
@@ -71,7 +73,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		if (CheckHitKey(KEY_INPUT_ESCAPE) == 1)
 			break;
 	}
-
+	game.Finalize();
 	DxLib_End();
 	return 0;
 }

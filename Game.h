@@ -1,13 +1,15 @@
 #pragma once
+#include"SceneManager.h"
 class Game
 {
 public:
-	Game();
-	~Game();
+	Game()=default;
+	~Game()=default;
 	void Initialize();
 	void Update();
 	void Draw();
+	void Finalize();
 private:
-	//ここ後でプレイヤーや敵のポインタを作る
+	SceneManager SceneManager_;
 };
 
