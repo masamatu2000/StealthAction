@@ -4,7 +4,7 @@
 #include <Windows.h>
 namespace
 {
-	const float MOVE_SPEED = 0.1f; // 移動速度
+	const float MOVE_SPEED = 10.0f; // 移動速度
 }
 Player::Player()
 {
@@ -19,30 +19,8 @@ Player::~Player()
 }
 
 void Player::Initialize()
-{/*
-    DWORD attr = GetFileAttributesA("Assets/Body Block.fbx");
-
-    if (attr == INVALID_FILE_ATTRIBUTES)
-    {
-        MessageBoxA(
-            nullptr,
-            "Player.fbx NOT FOUND",
-            "File Check",
-            MB_OK
-        );
-    }
-    else
-    {
-        MessageBoxA(
-            nullptr,
-            "Player.fbx FOUND",
-            "File Check",
-            MB_OK
-        );
-    }*/
-   
+{
 	hModel_ = MV1LoadModel("Assets/Player.mv1");
-
     _ASSERT_EXPR(
         hModel_ != -1,
         L"Failed to load Player.mv1"
@@ -86,6 +64,9 @@ void Player::Update()
 
     if (length > 0.0f)
     {
+        // 移動方向を向く
+        // モデルの正面が-Z方向なので180度補正
+       rotation_.y =atan2f(moveDir.x, moveDir.z)+ DX_PI_F;
         // 正規化
         moveDir.x /= length;
         moveDir.z /= length;
@@ -94,8 +75,7 @@ void Player::Update()
         velocity_.x = moveDir.x * MOVE_SPEED;
         velocity_.z = moveDir.z * MOVE_SPEED;
 
-        // 移動方向を向く
-        rotation_.y = atan2f(moveDir.x, moveDir.z);
+        
     }
     else
     {
