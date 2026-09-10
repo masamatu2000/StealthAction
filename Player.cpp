@@ -1,10 +1,11 @@
 #include "Player.h"
 #include<assert.h>
 #include<cmath>
-#include <Windows.h>
 namespace
 {
 	const float MOVE_SPEED = 10.0f; // 移動速度
+	const float ROTATE_SPEED = 10.0f;// 回転速度
+ 
 }
 Player::Player()
 {
@@ -20,71 +21,48 @@ Player::~Player()
 
 void Player::Initialize()
 {
-	hModel_ = MV1LoadModel("Assets/Player.mv1");
+	hModel_ = MV1LoadModel("Assets/Idle.mv1");
     _ASSERT_EXPR(
         hModel_ != -1,
-        L"Failed to load Player.mv1"
+        L"Failed to load Idle.mv1"
     );
 	position_ = { 300.0f, 0.0f, 0.0f };
 	rotation_ = { 0.0f, 0.0f, 0.0f };
 	scale_ = { 1.0f, 1.0f, 1.0f };
 	velocity_ = { 0.0f, 0.0f, 0.0f };
+    int animNum = MV1GetAnimNum(hModel_);
+
+    printfDx("AnimNum = %d\n", animNum);
+    int attach = MV1AttachAnim(hModel_, 1);
+
+    printfDx("AnimNum = %d\n", MV1GetAnimNum(hModel_));
+    printfDx("AttachIndex = %d\n", attach);
 }
 
 void Player::Update()
 {
-    Vector3 moveDir = { 0.0f, 0.0f, 0.0f };
+    Move();
+   
+    static float animTime_ = 0.0f;
 
-    if (Input::IsKeyDown(KEY_INPUT_W))
+    float totalTime =
+        MV1GetAttachAnimTotalTime(
+            hModel_,
+            0
+        );
+
+    animTime_ += GetDeltaTime() * 30.0f;
+
+    if (animTime_ >= totalTime)
     {
-        moveDir.z += 1.0f;
+        animTime_ = 0.0f;
     }
 
-    if (Input::IsKeyDown(KEY_INPUT_S))
-    {
-        moveDir.z -= 1.0f;
-    }
-
-    if (Input::IsKeyDown(KEY_INPUT_A))
-    {
-        moveDir.x -= 1.0f;
-    }
-
-    if (Input::IsKeyDown(KEY_INPUT_D))
-    {
-        moveDir.x += 1.0f;
-    }
-
-
-    // 入力されている場合
-    float length = sqrtf(
-        moveDir.x * moveDir.x +
-        moveDir.z * moveDir.z
+    MV1SetAttachAnimTime(
+        hModel_,
+        0,
+        animTime_
     );
-
-    if (length > 0.0f)
-    {
-        // 移動方向を向く
-        // モデルの正面が-Z方向なので180度補正
-       rotation_.y =atan2f(moveDir.x, moveDir.z)+ DX_PI_F;
-        // 正規化
-        moveDir.x /= length;
-        moveDir.z /= length;
-
-        // 速度
-        velocity_.x = moveDir.x * MOVE_SPEED;
-        velocity_.z = moveDir.z * MOVE_SPEED;
-
-        
-    }
-    else
-    {
-        velocity_.x = 0.0f;
-        velocity_.z = 0.0f;
-    }
-
-    position_.x += velocity_.x;
-    position_.z += velocity_.z;
 }
 
 void Player::Draw()
@@ -105,4 +83,36 @@ void Player::Draw()
     );
 
     MV1DrawModel(hModel_);
+}
+
+void Player::Move()
+{
+    // ゲーム上の向き
+    static float directionY_ = 0.0f;
+
+    // 左回転
+    if (Input::IsKeepKeyDown(KEY_INPUT_A))
+    {
+        directionY_ -= ROTATE_SPEED * GetDeltaTime();
+    }
+
+    // 右回転
+    if (Input::IsKeepKeyDown(KEY_INPUT_D))
+    {
+        directionY_ += ROTATE_SPEED * GetDeltaTime();
+    }
+
+    // 前進
+    if (Input::IsKeepKeyDown(KEY_INPUT_W))
+    {
+        position_.x += sinf(directionY_) * MOVE_SPEED;
+        position_.z += cosf(directionY_) * MOVE_SPEED;
+    }
+    if (Input::IsKeepKeyDown(KEY_INPUT_S))
+    {
+        position_.x -= sinf(directionY_) * MOVE_SPEED;
+        position_.z -= cosf(directionY_) * MOVE_SPEED;
+    }
+    // モデルだけ180度回転させる
+    rotation_.y = directionY_ + DX_PI_F;
 }

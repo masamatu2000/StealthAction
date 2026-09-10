@@ -1,6 +1,7 @@
 #pragma once
 #include<Dxlib.h>
 #include"Input.h"
+#include"globals.h"
 struct Vector3 
 {
 	float x = 0.0f;

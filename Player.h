@@ -15,5 +15,6 @@ public:
 	void Damege(int damage) {
 		// ダメージ処理の実装
 	}
+    void Move();
 };
 
