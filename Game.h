@@ -1,5 +1,8 @@
 #pragma once
 #include"SceneManager.h"
+/// <summary>
+/// ゲーム全体を管理するクラス
+/// </summary>
 class Game
 {
 public:

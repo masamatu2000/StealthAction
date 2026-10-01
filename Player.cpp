@@ -17,6 +17,11 @@ Player::~Player()
 		MV1DeleteModel(hModel_);
 		hModel_ = -1;
 	}
+	if (hWalkModel_ != -1)
+	{
+		MV1DeleteModel(hWalkModel_);
+		hWalkModel_ = -1;
+	}
 }
 
 void Player::Initialize()
@@ -26,17 +31,16 @@ void Player::Initialize()
         hModel_ != -1,
         L"Failed to load Idle.mv1"
     );
+	hWalkModel_ = MV1LoadModel("Assets/Walk.mv1");
+    _ASSERT_EXPR(
+        hWalkModel_ != -1,
+        L"Failed to load Walk.mv1"
+    );
 	position_ = { 300.0f, 0.0f, 0.0f };
 	rotation_ = { 0.0f, 0.0f, 0.0f };
 	scale_ = { 1.0f, 1.0f, 1.0f };
 	velocity_ = { 0.0f, 0.0f, 0.0f };
-    int animNum = MV1GetAnimNum(hModel_);
-
-    printfDx("AnimNum = %d\n", animNum);
-    int attach = MV1AttachAnim(hModel_, 1);
-
-    printfDx("AnimNum = %d\n", MV1GetAnimNum(hModel_));
-    printfDx("AttachIndex = %d\n", attach);
+	state_ = PlayerState::Idle;
 }
 
 void Player::Update()
@@ -63,10 +67,24 @@ void Player::Update()
         0,
         animTime_
     );
+    switch (state_)
+    {
+    case PlayerState::Idle:
+        break;
+    case PlayerState::Walk:
+        break;
+    case PlayerState::Jump:
+        break;
+    case PlayerState::Attack:
+        break;
+    default:
+        break;
+    }
 }
 
 void Player::Draw()
 {
+   
     MV1SetPosition(
         hModel_,
         VGet(position_.x, position_.y, position_.z)
@@ -107,12 +125,23 @@ void Player::Move()
     {
         position_.x += sinf(directionY_) * MOVE_SPEED;
         position_.z += cosf(directionY_) * MOVE_SPEED;
+		state_ = PlayerState::Walk;
     }
     if (Input::IsKeepKeyDown(KEY_INPUT_S))
     {
         position_.x -= sinf(directionY_) * MOVE_SPEED;
         position_.z -= cosf(directionY_) * MOVE_SPEED;
+        state_ = PlayerState::Walk;
     }
     // モデルだけ180度回転させる
     rotation_.y = directionY_ + DX_PI_F;
+}
+
+void Player::ChangeAnimation(PlayerState nextstate)
+{
+    if (state_ == nextstate) {
+		return;
+    }
+    	state_ = nextstate;
+
 }
