@@ -1,8 +1,9 @@
 #pragma once
 #include "Scene.h"
 #include <memory>
-
+#include<vector>
 class Player;/// 前方宣言
+class Enemy;/// 前方宣言
 class PlayScene :
     public Scene
 {
@@ -14,5 +15,6 @@ public:
     void Draw() override;
 private:
     std::unique_ptr<Player> player_;
+	std::vector<std::unique_ptr<Enemy>> enemies_;
 };
 

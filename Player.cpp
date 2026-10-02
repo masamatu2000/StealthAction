@@ -1,29 +1,36 @@
 #include "Player.h"
 #include<assert.h>
 #include<cmath>
+#include<string>
 namespace
 {
 	const float MOVE_SPEED = 10.0f; // 移動速度
 	const float ROTATE_SPEED = 10.0f;// 回転速度
-    
+    const std::string AnimPath = "Assets/Player/";
 }
 Player::Player()
 {
 }
 Player::~Player()
 {
-	if (hModel_ != -1)
+	for (int i = 0; i < static_cast<int>(PlayerState::Max); i++)
 	{
-		MV1DeleteModel(hModel_);
-		hModel_ = -1;
+		if (AnimHandle[i] != -1)
+		{
+			MV1DeleteModel(AnimHandle[i]);
+			AnimHandle[i] = -1;
+		}
+        if (AnimIndex[i] != -1)
+		{
+			AnimIndex[i] = -1;
+		}
 	}
-	
 }
 
 void Player::Initialize()
 {
-    AnimHandle[static_cast<int>(PlayerState::Idle)]= MV1LoadModel("Assets/Idle.mv1");
-    AnimHandle[static_cast<int>(PlayerState::Walk)] = MV1LoadModel("Assets/Walking.mv1");
+    AnimHandle[static_cast<int>(PlayerState::Idle)]= MV1LoadModel((AnimPath + "Idle.mv1").c_str());
+    AnimHandle[static_cast<int>(PlayerState::Walk)] = MV1LoadModel((AnimPath + "Walking.mv1").c_str());
     _ASSERT_EXPR(
         AnimHandle[static_cast<int>(PlayerState::Idle)]!= -1,
         L"Failed to load Idle.mv1"

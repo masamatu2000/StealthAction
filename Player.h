@@ -24,7 +24,6 @@ public:
 		// ダメージ処理の実装
 	}
     void Move();
-	void ChangeAnimation(PlayerState nextstate);
 	void UpdateAnimation(float &deltaTime);
 private:
 	//int hWalkModel_ = -1; // モデルハンドル
