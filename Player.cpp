@@ -17,11 +17,7 @@ Player::~Player()
 		MV1DeleteModel(hModel_);
 		hModel_ = -1;
 	}
-	if (hWalkModel_ != -1)
-	{
-		MV1DeleteModel(hWalkModel_);
-		hWalkModel_ = -1;
-	}
+	
 }
 
 void Player::Initialize()
@@ -41,6 +37,15 @@ void Player::Initialize()
 	scale_ = { 1.0f, 1.0f, 1.0f };
 	velocity_ = { 0.0f, 0.0f, 0.0f };
 	state_ = PlayerState::Idle;
+   
+    for(int i = 0; i < static_cast<int>(PlayerState::Max); i++)
+    {
+		AnimIndex[i] = MV1AttachAnim(
+			AnimHandle[i],
+			1
+		);
+       
+    }
 }
 
 void Player::Update()
@@ -49,7 +54,7 @@ void Player::Update()
     Move();
 
     UpdateAnimation(animTime_);
-    
+
     /*float totalTime =
         MV1GetAttachAnimTotalTime(
             hModel_,
@@ -116,18 +121,23 @@ void Player::Move()
         position_.x += sinf(directionY_) * MOVE_SPEED;
         position_.z += cosf(directionY_) * MOVE_SPEED;
 		//state_ = PlayerState::Walk;
+		IsWalk = true;
+		DidWalk = true;
     }
     if (Input::IsKeepKeyDown(KEY_INPUT_S))
     {
         position_.x -= sinf(directionY_) * MOVE_SPEED;
         position_.z -= cosf(directionY_) * MOVE_SPEED;
-        //state_ = PlayerState::Walk;
+		//state_ = PlayerState::Walk;
+		IsWalk = true;
+		DidWalk = true;
     }
-    if (IsWalk == DidWalk) {
+    if (IsWalk && DidWalk) {
         state_ = PlayerState::Walk;
     }
     else {
         state_ = PlayerState::Idle;
+		DidWalk = false;
     }
     // モデルだけ180度回転させる
     rotation_.y = directionY_ + DX_PI_F;
@@ -138,7 +148,7 @@ void Player::UpdateAnimation(float &deltaTime)
     float totalTime =
         MV1GetAttachAnimTotalTime(
            AnimHandle[static_cast<int>(state_)],
-           0
+           AnimIndex[static_cast<int>(state_)]
         );
 
     deltaTime += GetDeltaTime() * 30.0f;
@@ -150,7 +160,7 @@ void Player::UpdateAnimation(float &deltaTime)
    
     MV1SetAttachAnimTime(
         AnimHandle[static_cast<int>(state_)],
-        0,
+        AnimIndex[static_cast<int>(state_)],
         deltaTime
     );
 }
