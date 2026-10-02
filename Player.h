@@ -5,7 +5,8 @@ enum class PlayerState
 	Idle,
 	Walk,
 	Jump,
-	Attack
+	Attack,
+	Max
 };
 /// <summary>
 /// プレイヤークラス
@@ -24,9 +25,10 @@ public:
 	}
     void Move();
 	void ChangeAnimation(PlayerState nextstate);
-	void UpdateAnimation(float deltaTime);
+	void UpdateAnimation(float &deltaTime);
 private:
 	int hWalkModel_ = -1; // モデルハンドル
 	PlayerState state_ = PlayerState::Idle; // プレイヤーの状態
+	int AnimHandle[static_cast<int>(PlayerState::Max)];//アニメハンドルを入れておく配列
 };
 

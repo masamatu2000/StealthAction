@@ -5,7 +5,7 @@ namespace
 {
 	const float MOVE_SPEED = 10.0f; // 移動速度
 	const float ROTATE_SPEED = 10.0f;// 回転速度
- 
+    
 }
 Player::Player()
 {
@@ -26,15 +26,15 @@ Player::~Player()
 
 void Player::Initialize()
 {
-	hModel_ = MV1LoadModel("Assets/Idle.mv1");
+    AnimHandle[static_cast<int>(PlayerState::Idle)]= MV1LoadModel("Assets/Idle.mv1");
+    AnimHandle[static_cast<int>(PlayerState::Walk)] = MV1LoadModel("Assets/Walking.mv1");
     _ASSERT_EXPR(
-        hModel_ != -1,
+        AnimHandle[static_cast<int>(PlayerState::Idle)]!= -1,
         L"Failed to load Idle.mv1"
     );
-	hWalkModel_ = MV1LoadModel("Assets/Walk.mv1");
     _ASSERT_EXPR(
-        hWalkModel_ != -1,
-        L"Failed to load Walk.mv1"
+        AnimHandle[static_cast<int>(PlayerState::Walk)] != -1,
+        L"Failed to load Walking.mv1"
     );
 	position_ = { 300.0f, 0.0f, 0.0f };
 	rotation_ = { 0.0f, 0.0f, 0.0f };
@@ -45,11 +45,12 @@ void Player::Initialize()
 
 void Player::Update()
 {
-    Move();
-   
     static float animTime_ = 0.0f;
+    Move();
 
-    float totalTime =
+    UpdateAnimation(animTime_);
+    
+    /*float totalTime =
         MV1GetAttachAnimTotalTime(
             hModel_,
             0
@@ -66,48 +67,37 @@ void Player::Update()
         hModel_,
         0,
         animTime_
-    );
-    switch (state_)
-    {
-    case PlayerState::Idle:
-        break;
-    case PlayerState::Walk:
-        break;
-    case PlayerState::Jump:
-        break;
-    case PlayerState::Attack:
-        break;
-    default:
-        break;
-    }
+    );*/
+   
 }
 
 void Player::Draw()
 {
    
     MV1SetPosition(
-        hModel_,
+        AnimHandle[static_cast<int>(state_)],
         VGet(position_.x, position_.y, position_.z)
     );
 
     MV1SetRotationXYZ(
-        hModel_,
+        AnimHandle[static_cast<int>(state_)],
         VGet(rotation_.x, rotation_.y, rotation_.z)
     );
 
     MV1SetScale(
-        hModel_,
+        AnimHandle[static_cast<int>(state_)],
         VGet(scale_.x, scale_.y, scale_.z)
     );
 
-    MV1DrawModel(hModel_);
+    MV1DrawModel(AnimHandle[static_cast<int>(state_)]);
 }
 
 void Player::Move()
 {
     // ゲーム上の向き
     static float directionY_ = 0.0f;
-
+    bool IsWalk = false;
+    static bool DidWalk = false;
     // 左回転
     if (Input::IsKeepKeyDown(KEY_INPUT_A))
     {
@@ -125,23 +115,42 @@ void Player::Move()
     {
         position_.x += sinf(directionY_) * MOVE_SPEED;
         position_.z += cosf(directionY_) * MOVE_SPEED;
-		state_ = PlayerState::Walk;
+		//state_ = PlayerState::Walk;
     }
     if (Input::IsKeepKeyDown(KEY_INPUT_S))
     {
         position_.x -= sinf(directionY_) * MOVE_SPEED;
         position_.z -= cosf(directionY_) * MOVE_SPEED;
+        //state_ = PlayerState::Walk;
+    }
+    if (IsWalk == DidWalk) {
         state_ = PlayerState::Walk;
+    }
+    else {
+        state_ = PlayerState::Idle;
     }
     // モデルだけ180度回転させる
     rotation_.y = directionY_ + DX_PI_F;
 }
 
-void Player::ChangeAnimation(PlayerState nextstate)
+void Player::UpdateAnimation(float &deltaTime)
 {
-    if (state_ == nextstate) {
-		return;
-    }
-    	state_ = nextstate;
+    float totalTime =
+        MV1GetAttachAnimTotalTime(
+           AnimHandle[static_cast<int>(state_)],
+           0
+        );
 
+    deltaTime += GetDeltaTime() * 30.0f;
+
+    if (deltaTime >= totalTime)
+    {
+        deltaTime= 0.0f;
+    }
+   
+    MV1SetAttachAnimTime(
+        AnimHandle[static_cast<int>(state_)],
+        0,
+        deltaTime
+    );
 }
