@@ -1,6 +1,7 @@
 #include "PlayScene.h"
 #include"Player.h"
 #include"Enemy.h"
+#include"Stage.h"
 PlayScene::PlayScene()
 {
 }
@@ -11,6 +12,8 @@ PlayScene::~PlayScene()
 
 void PlayScene::Initialize()
 {
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 	enemies_.push_back(std::make_unique<Enemy>());
@@ -22,6 +25,7 @@ void PlayScene::Initialize()
 
 void PlayScene::Update()
 {
+	stage_->Update();
 	player_->Update();
 	for (auto& e : enemies_) {
 		e->Update();
@@ -33,6 +37,7 @@ void PlayScene::Update()
 
 void PlayScene::Draw()
 {
+	stage_->Draw();
 	player_->Draw();
 	for (auto& e : enemies_) {
 		e->Draw();
