@@ -15,7 +15,7 @@ class Player :
     public GameObject
 {
 public:
-    Player();
+    Player()=default;
 	~Player() override;
     void Initialize() override;
     void Update() override;

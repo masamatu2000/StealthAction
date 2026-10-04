@@ -14,9 +14,13 @@ public:
     void Initialize() override;
     void Update() override;
     void Draw() override;
+   
+    Player* FindPlayer()const;
+	
+    const std::vector<std::unique_ptr<Enemy>>& FindEnemies() const;
 private:
     std::unique_ptr<Player> player_;
-	std::vector<std::unique_ptr<Enemy>> enemies_;
-	std::unique_ptr<Stage> stage_;
+    std::vector<std::unique_ptr<Enemy>> enemies_;
+    std::unique_ptr<Stage> stage_;
 };
 

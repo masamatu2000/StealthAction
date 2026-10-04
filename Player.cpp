@@ -8,9 +8,7 @@ namespace
 	const float ROTATE_SPEED = 10.0f;// 回転速度
     const std::string AnimPath = "Assets/Player/";
 }
-Player::Player()
-{
-}
+
 Player::~Player()
 {
 	for (int i = 0; i < static_cast<int>(PlayerState::Max); i++)

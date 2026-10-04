@@ -2,6 +2,7 @@
 #include<Dxlib.h>
 #include"Input.h"
 #include"globals.h"
+#include<vector>
 struct Vector3 
 {
 	float x = 0.0f;
@@ -25,11 +26,13 @@ public:
 	Vector3 GetPosition() const {
 		return position_;
 	}
+	
 protected:
 	Vector3 position_;
 	Vector3 rotation_;
 	Vector3 scale_= {1.0f, 1.0f, 1.0f};
 	Vector3 velocity_;
 	int hModel_=-1;
+	std::vector<GameObject*> children_;
 };
 

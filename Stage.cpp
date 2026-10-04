@@ -1,5 +1,6 @@
 #include "Stage.h"
-
+#include "Player.h"
+#include "Enemy.h"
 void Stage::Initialize()
 {
 	walls_.push_back(Wall(wallMin_, wallMax_));
@@ -7,6 +8,34 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	//playerの位置を取得
+    if (player_ != nullptr)
+    {
+		VECTOR position = VECTOR(player_->GetPosition().x, player_->GetPosition().y, player_->GetPosition().z);
+        // 壁の当たり判定
+        for (auto& wall : walls_)
+        {
+            if (wall.IsHitWall(position))// プレイヤーの位置が壁の範囲内にあるかをチェック
+            {
+                // 当たった場合の処理
+				//法線ベクトルを計算してプレイヤーの位置を修正する
+
+            }
+        }
+    }
+	VECTOR epos = { 0.0f, 0.0f, 0.0f };
+    for(auto& enemy : enemies_)
+    {
+		epos = VECTOR(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
+        for(auto& wall : walls_)
+        {
+            if (wall.IsHitWall(epos))// 敵の位置が壁の範囲内にあるかをチェック
+            {
+                // 当たった場合の処理
+				//法線ベクトルを計算して敵の位置を修正する
+            }
+        }
+    }
 }
 
 void Stage::Draw()
@@ -22,10 +51,8 @@ void Stage::Draw()
 
 void Stage::DrawWall(const Wall& wall) const
 {
-	const float WALL_HEIGHT = 200.0f; // 壁の高さ
-	const float WALL_THICKNESS = 10.0f; // 壁の厚さ
-	const float WALL_WIDTH = 400.0f; // 壁の幅
-    DrawCube3D(VGet(0.0f, WALL_HEIGHT, 0.0f), VGet(WALL_THICKNESS, WALL_HEIGHT, WALL_WIDTH), GetColor(100, 110, 120),GetColor(0,0,0), TRUE);
+	
+    DrawCube3D(VGet(wall.wallMin.x, wall.wallMin.y, wall.wallMin.z), VGet(wall.wallMax.x,wall.wallMax.y, wall.wallMax.z), GetColor(255, 255, 255),GetColor(0,0,0), TRUE);
 }
 
 void Stage::DrawFloor() const

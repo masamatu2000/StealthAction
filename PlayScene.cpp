@@ -21,11 +21,16 @@ void PlayScene::Initialize()
 	{
 		e->Initialize();
 	}
+	stage_->SetPlayer(player_.get());
+	for(auto& enemy : enemies_)
+	{
+		stage_->AddEnemy(enemy.get());
+	}
 }
 
 void PlayScene::Update()
 {
-	stage_->Update();
+	
 	player_->Update();
 	for (auto& e : enemies_) {
 		e->Update();
@@ -33,15 +38,26 @@ void PlayScene::Update()
 	if (Input::IsKeyDown(KEY_INPUT_R)) {
 		RequestChangeScene(SceneState::Result);
 	}
+	stage_->Update();
 }
 
 void PlayScene::Draw()
 {
-	stage_->Draw();
+	
 	player_->Draw();
 	for (auto& e : enemies_) {
 		e->Draw();
 	}
 	DrawString(WIN_WIDTH / 2, WIN_HEIGHT / 2, "PLAY SCENE", GetColor(255, 255, 0));
 	DrawString(WIN_WIDTH / 2, WIN_HEIGHT / 2 + 40, "PUSH R TO RESULT", GetColor(255, 255, 255));
+	stage_->Draw();
+}
+
+Player* PlayScene::FindPlayer() const
+{
+	return player_.get();
+}
+const std::vector<std::unique_ptr<Enemy>>& PlayScene::FindEnemies() const
+{
+	return enemies_;
 }
