@@ -2,11 +2,13 @@
 #include<assert.h>
 #include<cmath>
 #include<string>
+#include"Stage.h"
 namespace
 {
 	const float MOVE_SPEED = 10.0f; // 移動速度
 	const float ROTATE_SPEED = 10.0f;// 回転速度
     const std::string AnimPath = "Assets/Player/";
+    const float COLLISION_RADIUS = 10.0f;//当たり判定用の半径
 }
 
 Player::~Player()
@@ -41,8 +43,9 @@ void Player::Initialize()
 	rotation_ = { 0.0f, 0.0f, 0.0f };
 	scale_ = { 1.0f, 1.0f, 1.0f };
 	velocity_ = { 0.0f, 0.0f, 0.0f };
+    direction_ = { 0.0f,0.0f,0.0f };
 	state_ = PlayerState::Idle;
-   
+    CollisionRadius_ = COLLISION_RADIUS;
     for(int i = 0; i < static_cast<int>(PlayerState::Max); i++)
     {
 		AnimIndex[i] = MV1AttachAnim(
@@ -123,16 +126,16 @@ void Player::Move()
     // 前進
     if (Input::IsKeepKeyDown(KEY_INPUT_W))
     {
-        position_.x += sinf(directionY_) * MOVE_SPEED;
-        position_.z += cosf(directionY_) * MOVE_SPEED;
+        direction_.x += sinf(directionY_) * MOVE_SPEED;
+        direction_.z += cosf(directionY_) * MOVE_SPEED;
 		//state_ = PlayerState::Walk;
 		IsWalk = true;
 		DidWalk = true;
     }
     if (Input::IsKeepKeyDown(KEY_INPUT_S))
     {
-        position_.x -= sinf(directionY_) * MOVE_SPEED;
-        position_.z -= cosf(directionY_) * MOVE_SPEED;
+        direction_.x -= sinf(directionY_) * MOVE_SPEED;
+        direction_.z -= cosf(directionY_) * MOVE_SPEED;
 		//state_ = PlayerState::Walk;
 		IsWalk = true;
 		DidWalk = true;
@@ -143,6 +146,9 @@ void Player::Move()
     else {
         state_ = PlayerState::Idle;
 		DidWalk = false;
+    }
+    if (stage_ != nullptr) {
+        stage_->IsHitWall(position_, direction_,CollisionRadius_);
     }
     // モデルだけ180度回転させる
     rotation_.y = directionY_ + DX_PI_F;

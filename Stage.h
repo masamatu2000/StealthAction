@@ -35,6 +35,7 @@ public:
 	void SetPlayer(Player* player) {// プレイヤーのポインタを設定する関数
 		player_ = player;
 	}
+	bool IsHitWall(VECTOR pos, VECTOR& dir,float r);
 	void AddEnemy(Enemy* enemy) {// 敵のポインタを追加する関数
 		enemies_.push_back(enemy);
 	}

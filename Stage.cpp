@@ -1,6 +1,7 @@
 #include "Stage.h"
 #include "Player.h"
 #include "Enemy.h"
+#include<algorithm>
 void Stage::Initialize()
 {
 	walls_.push_back(Wall(wallMin_, wallMax_));
@@ -8,34 +9,7 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	//playerの位置を取得
-    if (player_ != nullptr)
-    {
-		VECTOR position = VECTOR(player_->GetPosition().x, player_->GetPosition().y, player_->GetPosition().z);
-        // 壁の当たり判定
-        for (auto& wall : walls_)
-        {
-            if (wall.IsHitWall(position))// プレイヤーの位置が壁の範囲内にあるかをチェック
-            {
-                // 当たった場合の処理
-				//法線ベクトルを計算してプレイヤーの位置を修正する
-
-            }
-        }
-    }
-	VECTOR epos = { 0.0f, 0.0f, 0.0f };
-    for(auto& enemy : enemies_)
-    {
-		epos = VECTOR(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
-        for(auto& wall : walls_)
-        {
-            if (wall.IsHitWall(epos))// 敵の位置が壁の範囲内にあるかをチェック
-            {
-                // 当たった場合の処理
-				//法線ベクトルを計算して敵の位置を修正する
-            }
-        }
-    }
+	
 }
 
 void Stage::Draw()
@@ -95,4 +69,24 @@ void Stage::DrawFloor() const
             gridColor
         );
     }
+}
+
+bool Stage::IsHitWall(VECTOR pos, VECTOR& dir,float r)
+{
+    for (auto& wall : walls_)
+    {
+        if (wall.IsHitWall(pos))// プレイヤーの位置が壁の範囲内にあるかをチェック
+        {
+            // 当たった場合の処理
+            //法線ベクトルを計算してプレイヤーの位置を修正する
+            //プレイヤーのと壁の一番近い点
+            VECTOR closestPoint = VGet(
+                std::clamp(pos.x, wall.wallMin.x, wall.wallMax.x),
+                pos.y,
+                std::clamp(pos.z, wall.wallMin.z, wall.wallMax.z)
+            );
+           
+        }
+    }
+    return false;
 }

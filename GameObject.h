@@ -20,19 +20,21 @@ public:
 	virtual void Initialize() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
-	void SetPosition(const Vector3& position) {
+	void SetPosition(const VECTOR& position) {
 		position_ = position;
 	}
-	Vector3 GetPosition() const {
+	VECTOR GetPosition() const {
 		return position_;
 	}
 	
 protected:
-	Vector3 position_;
-	Vector3 rotation_;
-	Vector3 scale_= {1.0f, 1.0f, 1.0f};
-	Vector3 velocity_;
+	VECTOR position_;
+	VECTOR rotation_;
+	VECTOR scale_= {1.0f, 1.0f, 1.0f};
+	VECTOR velocity_;
+	VECTOR direction_ ={ 0.0f,0.0f,0.0f };
 	int hModel_=-1;
 	std::vector<GameObject*> children_;
+	float CollisionRadius_;
 };
 
