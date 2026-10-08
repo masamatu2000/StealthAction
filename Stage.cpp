@@ -79,9 +79,6 @@ bool Stage::IsHitWall(VECTOR &pos, VECTOR& dir,float r)
 	VECTOR nextPos = VGet(pos.x + dir.x * GetDeltaTime(), pos.y, pos.z + dir.z * GetDeltaTime());
     for (auto& wall : walls_)
     {
-            // 当たった場合の処理
-            //法線ベクトルを計算してプレイヤーの位置を修正する
-            //プレイヤーのと壁の一番近い点
             VECTOR closestPoint = VGet(
                 std::clamp(nextPos.x, wall.wallMin.x, wall.wallMax.x),
                 pos.y,

@@ -35,8 +35,7 @@ public:
 	}
 
 private:
-	VECTOR wallMin_ = VGet(0.0f, 0.0f, 0.0f);
-	VECTOR wallMax_ = VGet(200.0f, 200.0f, 50.0f);
+	
 	std::vector<Wall> walls_;
 	Player* player_ = nullptr; // プレイヤーのポインタ
 	std::vector<Enemy*> enemies_;
