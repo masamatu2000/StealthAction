@@ -21,13 +21,7 @@ public:
 		VECTOR wallMin;
 		VECTOR wallMax;
 		Wall(VECTOR min, VECTOR max) : wallMin(min), wallMax(max) {}
-		bool IsHitWall(const VECTOR& position) {
-			if((position.x > wallMin.x && position.x < wallMax.x)&&(position.y > wallMin.y && position.y < wallMax.y)&&(position.z > wallMin.z && position.z < wallMax.z))
-			{
-				return true;
-			}
-			return false;
-		}
+		
 	};
 	void DrawWall(const Wall& wall) const;// 壁を描画する関数
 	void DrawFloor() const;// 床を描画する関数
@@ -41,8 +35,7 @@ public:
 	}
 
 private:
-	VECTOR wallMin_ = VGet(0.0f, 0.0f, 200.0f);
-	VECTOR wallMax_ = VGet(200.0f, 200.0f, 50.0f);
+	
 	std::vector<Wall> walls_;
 	Player* player_ = nullptr; // プレイヤーのポインタ
 	std::vector<Enemy*> enemies_;

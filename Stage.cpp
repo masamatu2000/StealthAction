@@ -4,7 +4,7 @@
 #include<algorithm>
 void Stage::Initialize()
 {
-	walls_.push_back(Wall(wallMin_, wallMax_));
+	walls_.push_back(Wall(VECTOR(0.0f, 0.0f, 0.0f), VECTOR(50.0f, 200.0f, 200.0f)));
 }
 
 void Stage::Update()
@@ -75,18 +75,21 @@ bool Stage::IsHitWall(VECTOR pos, VECTOR& dir,float r)
 {
     for (auto& wall : walls_)
     {
-        if (wall.IsHitWall(pos))// プレイヤーの位置が壁の範囲内にあるかをチェック
-        {
-            // 当たった場合の処理
-            //法線ベクトルを計算してプレイヤーの位置を修正する
-            //プレイヤーのと壁の一番近い点
             VECTOR closestPoint = VGet(
                 std::clamp(pos.x, wall.wallMin.x, wall.wallMax.x),
                 pos.y,
                 std::clamp(pos.z, wall.wallMin.z, wall.wallMax.z)
             );
-           
-        }
+			float distance = (closestPoint.x -pos.x) *(closestPoint.x-pos.x) + (closestPoint.y-pos.y) * (closestPoint.y-pos.y) + (closestPoint.z-pos.z) * (closestPoint.z-pos.z);
+            if(distance < r * r)
+            {
+                //↓壁すり
+                //壁の法線ベクトル
+				VECTOR wallNormal = VNorm(VSub(pos, closestPoint));
+				float dot = VDot(dir, wallNormal);
+				dir = VSub(dir, VScale(wallNormal,dot));
+                return true;
+            }
     }
     return false;
 }
