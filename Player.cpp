@@ -5,10 +5,10 @@
 #include"Stage.h"
 namespace
 {
-	const float MOVE_SPEED = 10.0f; // 移動速度
+	const float MOVE_SPEED = 100.0f; // 移動速度
 	const float ROTATE_SPEED = 10.0f;// 回転速度
     const std::string AnimPath = "Assets/Player/";
-    const float COLLISION_RADIUS = 10.0f;//当たり判定用の半径
+    const float COLLISION_RADIUS = 3.0f;//当たり判定用の半径
 }
 
 Player::~Player()
@@ -150,8 +150,13 @@ void Player::Move()
     if (stage_ != nullptr) {
         stage_->IsHitWall(position_, direction_,CollisionRadius_);
     }
+    else {
+        position_.x += direction_.x * GetDeltaTime();
+        position_.z += direction_.z * GetDeltaTime();
+    }
     // モデルだけ180度回転させる
     rotation_.y = directionY_ + DX_PI_F;
+	direction_ = { 0.0f, 0.0f, 0.0f };
 }
 
 void Player::UpdateAnimation(float &deltaTime)

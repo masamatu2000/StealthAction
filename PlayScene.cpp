@@ -16,6 +16,7 @@ void PlayScene::Initialize()
 	stage_->Initialize();
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
+	player_->SetStage(stage_.get());
 	enemies_.push_back(std::make_unique<Enemy>());
 	for(auto& e : enemies_)
 	{

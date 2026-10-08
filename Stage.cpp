@@ -2,9 +2,12 @@
 #include "Player.h"
 #include "Enemy.h"
 #include<algorithm>
+#include"globals.h"
 void Stage::Initialize()
 {
-	walls_.push_back(Wall(wallMin_, wallMax_));
+	VECTOR wallMin1 = VGet(0.0f, 0.0f, 0.0f);
+	VECTOR wallMax1 = VGet(10.0f, 200.0f, 1000.0f);
+	walls_.push_back(Wall(wallMin1, wallMax1));
 }
 
 void Stage::Update()
@@ -71,22 +74,45 @@ void Stage::DrawFloor() const
     }
 }
 
-bool Stage::IsHitWall(VECTOR pos, VECTOR& dir,float r)
+bool Stage::IsHitWall(VECTOR &pos, VECTOR& dir,float r)
 {
+	VECTOR nextPos = VGet(pos.x + dir.x * GetDeltaTime(), pos.y, pos.z + dir.z * GetDeltaTime());
     for (auto& wall : walls_)
     {
-        if (wall.IsHitWall(pos))// プレイヤーの位置が壁の範囲内にあるかをチェック
-        {
             // 当たった場合の処理
             //法線ベクトルを計算してプレイヤーの位置を修正する
             //プレイヤーのと壁の一番近い点
             VECTOR closestPoint = VGet(
-                std::clamp(pos.x, wall.wallMin.x, wall.wallMax.x),
+                std::clamp(nextPos.x, wall.wallMin.x, wall.wallMax.x),
                 pos.y,
-                std::clamp(pos.z, wall.wallMin.z, wall.wallMax.z)
+                std::clamp(nextPos.z, wall.wallMin.z, wall.wallMax.z)
             );
-           
-        }
+           float distance=(closestPoint.x-nextPos.x)*(closestPoint.x-nextPos.x)+(closestPoint.z-nextPos.z)*(closestPoint.z-nextPos.z);
+           if (distance < r * r)
+           {
+			   if (distance == 0) {// プレイヤーが壁の中にいる場合
+
+                   VECTOR penetrationVector = VECTOR{ nextPos.x+r, pos.y, nextPos.z+r };
+				   dir = VSub(closestPoint,penetrationVector);
+				   pos.x += dir.x;
+				   pos.z += dir.z;
+				   return true;
+               }
+               if (distance > 0.0f) {
+                   //壁の法線ベクトル
+                   VECTOR wallNormal = VNorm(VSub(nextPos, closestPoint));
+                   float len = VDot(dir, wallNormal);
+                   if (len < 0)
+                   {
+                       dir = VSub(dir, VScale(wallNormal, len));
+                       pos.x += dir.x * GetDeltaTime();
+                       pos.z += dir.z * GetDeltaTime();
+                       return true;
+                   }
+               }
+           }
     }
+    pos.x += dir.x * GetDeltaTime();
+    pos.z += dir.z * GetDeltaTime();
     return false;
 }
